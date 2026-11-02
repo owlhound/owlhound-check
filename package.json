@@ -1,0 +1,16 @@
+{
+  "name": "owlhound",
+  "version": "1.0.0",
+  "description": "Check websites for HTTP status, response time and certificate days left, from the command line or GitHub Actions.",
+  "keywords": ["uptime", "monitoring", "ssl", "certificate", "health-check", "github-action", "cli"],
+  "homepage": "https://github.com/owlhound/owlhound-check#readme",
+  "bugs": "https://github.com/owlhound/owlhound-check/issues",
+  "repository": { "type": "git", "url": "git+https://github.com/owlhound/owlhound-check.git" },
+  "license": "MIT",
+  "author": "OwlHound (https://owlhound.com)",
+  "bin": { "owlhound": "bin/owlhound.js" },
+  "main": "src/check.js",
+  "files": ["bin/", "src/", "README.md", "LICENSE", "CHANGELOG.md"],
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test \"test/*.test.js\"" }
+}

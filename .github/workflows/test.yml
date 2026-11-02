@@ -1,0 +1,50 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+
+  action:
+    # The Action itself, run the way users run it, against a local server: it must fail on a 500 and pass on a 200.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start the fixture server
+        run: |
+          node test/fixture-server.js 8765 &
+          for i in $(seq 1 20); do curl -fs http://127.0.0.1:8765/ok && break; sleep 0.5; done
+      - name: Check an address that answers 500
+        id: broken
+        uses: ./
+        continue-on-error: true
+        with:
+          urls: http://127.0.0.1:8765/fail
+      - name: Check addresses that answer 200
+        id: fine
+        uses: ./
+        with:
+          urls: |
+            http://127.0.0.1:8765/ok
+            http://127.0.0.1:8765/moved
+      - name: The 500 failed the step and the 200s passed
+        run: |
+          test "${{ steps.broken.outcome }}" = "failure"
+          test "${{ steps.broken.outputs.failed }}" = "1"
+          test "${{ steps.fine.outcome }}" = "success"
+          test "${{ steps.fine.outputs.failed }}" = "0"

@@ -1,0 +1,46 @@
+name: OwlHound Check
+description: Check websites for HTTP status, response time and certificate days left, and fail the job when one breaks a limit.
+author: OwlHound
+branding:
+  icon: activity
+  color: purple
+inputs:
+  urls:
+    description: Addresses to check, one per line or separated by commas. A bare domain gets https://.
+    required: true
+  expect-status:
+    description: Status codes that pass, such as 200-399 or 200,301.
+    required: false
+    default: "200-399"
+  max-latency-ms:
+    description: Fail when the first response takes longer than this many milliseconds. Empty or 0 turns it off.
+    required: false
+    default: "0"
+  min-ssl-days:
+    description: Fail when an https certificate expires in fewer days than this. 0 turns it off.
+    required: false
+    default: "14"
+  timeout-seconds:
+    description: Give up on an address after this many seconds.
+    required: false
+    default: "10"
+  fail-job:
+    description: Set to false to report failures without failing the job.
+    required: false
+    default: "true"
+  owlhound-token:
+    description: Optional OwlHound API key. The results then also appear on your monitors in OwlHound. A read-only key is enough.
+    required: false
+    default: ""
+  owlhound-api:
+    description: The OwlHound API address. Only change it for testing.
+    required: false
+    default: "https://owlhound.com/api/v1"
+outputs:
+  failed:
+    description: How many addresses failed a check.
+  results:
+    description: JSON array with url, final_url, ok, status, ms, ssl_days and reason for each address.
+runs:
+  using: node24
+  main: src/action.js
